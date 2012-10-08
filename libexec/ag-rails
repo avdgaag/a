@@ -1,0 +1,8 @@
+#!/usr/bin/sh
+# Usage: ag rails NAME
+# Summary: Create a new Rails application using custom template
+# Help: Issues the `rails new` command with a preset Rails template
+# and some options.
+#
+# Take a look at ./share/rails.rb to see what it does.
+rails new "$1" -m "$_AG_ROOT/share/rails.rb" -T -d postgresql

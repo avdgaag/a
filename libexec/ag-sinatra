@@ -1,0 +1,167 @@
+#!/usr/bin/env ruby
+# Usage: ag sinatra PATH
+# Summary: generate a skeleton Sinatra application in PATH
+# Help: Generate a set of files and directories in ./PATH
+# to quickly build a new web application with the Sinatra
+# framework.
+#
+# Example usage:
+#
+#     ag sinatra my_app
+#
+# This will generate an application called
+# MyApp in ./my_app.
+#
+# This handles the following setup for you:
+#
+# * Bundler with sane Gemfile
+# * config.ru file
+# * Sass with Bourbon loaded
+# * Coffee Script
+# * Sinatra application
+# * Routes for assets
+# * Rubygems layout
+
+require 'fileutils'
+NAME = ARGV[0]
+MODULE_NAME = NAME.gsub(/(?:^|_)(.)/) { $1.upcase }
+ROOT = File.join(FileUtils.pwd, NAME)
+
+def in_dir(dir)
+  old_dir = FileUtils.pwd
+  FileUtils.cd dir
+  yield
+  FileUtils.cd old_dir
+end
+
+def create_file(filename, content)
+  puts "create #{filename}"
+  path = File.join(ROOT, filename)
+  FileUtils.mkdir_p File.dirname(path)
+  File.open(path, 'w') do |f|
+    f.write content
+  end
+end
+
+create_file 'Gemfile', <<-EOS
+source :rubygems
+gem 'sinatra', require: 'sinatra/base'
+gem 'bourbon'
+gem 'sass'
+gem 'haml'
+gem 'coffee-script'
+gem 'thin'
+
+group :development do
+  gem 'foreman'
+  gem 'yard'
+  gem 'rake'
+end
+EOS
+
+create_file 'Procfile', <<-EOS
+web: bundle exec rackup config.ru -p $PORT -s thin
+EOS
+
+create_file 'config.ru', <<-EOS
+require 'rubygems'
+require 'bundler'
+Bundler.require
+
+$:.unshift File.expand_path('../lib', __FILE__)
+require '#{NAME}'
+#{MODULE_NAME}::App.set :root, File.expand_path('..', __FILE__)
+#{MODULE_NAME}::App.set :scss, load_paths: [
+  File.join(Bundler.load.specs.find { |s| s.name == 'bourbon' }.full_gem_path, 'app', 'assets', 'stylesheets')
+]
+run #{MODULE_NAME}::App
+EOS
+
+create_file 'README', <<-EOS
+#{MODULE_NAME}
+EOS
+
+create_file 'LICENSE', <<-EOS
+Copyright (C) #{Time.now.year} #{`whoami`}
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+EOS
+
+create_file '.env', 'PORT=3000'
+create_file '.gitignore', '.env'
+create_file "lib/#{NAME}.rb", <<-EOS
+require '#{NAME}/app'
+require '#{NAME}/version'
+
+module #{MODULE_NAME}
+end
+EOS
+
+create_file "lib/#{NAME}/version.rb", <<-EOS
+module #{MODULE_NAME}
+  VERSION = '0.0.0'
+end
+EOS
+
+create_file "lib/#{NAME}/app.rb", <<-EOS
+module #{MODULE_NAME}
+  class App < Sinatra::Base
+    set :haml, format: :html5
+    set :scss, style: :compressed
+
+    get '/styles.css' do
+      headers 'Content-Type' => 'text/css; charset=utf-8'
+      scss :styles
+    end
+
+    get '/lib.js' do
+      headers 'Content-Type' => 'text/javascript'
+      coffee :lib
+    end
+
+    get '/' do
+      haml :index
+    end
+  end
+end
+EOS
+
+create_file 'views/layout.haml', <<-EOS
+!!! 5
+%html{ lang: 'en' }
+  %head
+    %meta{ charset: 'utf-8' }
+    %title #{MODULE_NAME}
+    %link{ rel: 'stylesheet', href: '/styles.css' }
+  %body
+    #page
+      = yield
+    %script{ src: '/lib.js ' }
+EOS
+
+create_file 'views/styles.scss', "@import 'bourbon';"
+create_file 'views/lib.coffee', ''
+create_file 'views/index.haml', '%h1 Hello, world'
+
+in_dir ROOT do
+  system 'bundle install'
+  system 'git init .'
+  system 'git add .'
+  system 'git commit -m "Initial commit"'
+end

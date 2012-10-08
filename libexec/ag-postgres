@@ -1,0 +1,92 @@
+#!/usr/bin/env zsh
+# Usage: ag postgres [subcommand] [-d DATABASE_NAME] [-f FILENAME]
+# Summary: Common operations with PostgreSQL databases
+# Help: Connect to, manage or import/export a PostgreSQL database.
+#
+# Available operations:
+#
+# psql:    open a prompt to the database
+# start:   start the database server
+# stop:    stop the database server
+# dump:    export database into a dump file
+# restore: import into a database from a dump file.
+# kill:    kill all connections to a database
+#
+# You should provide the database name for these operations
+# using the -d option. The dump and restore subcommands
+# take another argument -f for the file to use.
+#
+# When in a Rails project, you can omit the -d option; the
+# script will try to look up the database name from your
+# config/database.yml file, using the 'development'
+# environment.
+#
+# Example usage:
+#
+#     ag postgres psql -d mydb
+
+set -e
+
+# Provide ag completions
+if [ "$1" = "--complete" ]; then
+  echo "dump"
+  echo "restore"
+  echo "kill"
+  echo "start"
+  echo "stop"
+  exit
+fi
+
+subcommand=$1
+if [ $# -gt 0 ]; then
+  shift 1
+fi
+
+# Parse options
+while getopts f:d: OPT; do
+  case "$OPT" in
+    d)
+      DATABASE_NAME=$OPTARG
+      ;;
+    f)
+      FILENAME=$OPTARG
+      ;;
+    \?)
+      echo "Unknown options. Only -f and -d are allowed."
+      exit 1
+      ;;
+  esac
+done
+
+if [ -z "$DATABASE_NAME" ] && [ -f "config/database.yml" ]; then
+  DATABASE_NAME=$(ruby -ryaml -e "puts YAML.load_file('config/database.yml')['development']['database']")
+else
+  echo "Could not auto-detect database name from config.yml."
+  echo "Specify the database name with the -d option."
+  exit 1
+fi
+
+case "$subcommand" in
+  "" | "psql")
+    psql -d "$DATABASE_NAME"
+    ;;
+  "dump")
+    pg_dump -Fc --no-acl --no-owner -d "$DATABASE_NAME"
+    ;;
+  "restore")
+    pg_restore --clean --no-acl --no-owner -d "$DATABASE_NAME" "$FILENAME"
+    ;;
+  "kill")
+    ps aux | grep "$DATABASE_NAME" | grep -v grep | awk "{print \$2}" | xargs kill
+    ;;
+  "start")
+    pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
+    ;;
+  "stop")
+    pg_ctl -D /usr/local/var/postgres stop -s -m fast
+    ;;
+  *)
+    echo "Unrecognized subcommand $@."
+    echo "Use one of psql, dump, restore, kill, start or stop."
+    exit 1
+esac

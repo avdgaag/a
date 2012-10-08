@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+# Usage: ag pow link
+# Summary: Manage Pow web server
+# Help: Available subcommands:
+#
+# link: symlink current directory into ~/.pow
+# unlink: remove symlink to current directory from ~/.pow
+#
+
+# Provide ag completions
+if [ "$1" = "--complete" ]; then
+  echo "link"
+  echo "unlink"
+  exit
+fi
+
+case "$1" in
+  link)
+    name=`basename $PWD`
+    rm ~/.pow/$name
+    ln -s $PWD ~/.pow/$name
+    echo "Created pow rails app at: http://$name.dev"
+    ;;
+  unlink)
+    name=`basename $PWD`
+    rm ~/.pow/$name
+    ;;
+  *)
+    echo "Unrecognized options $@."
+    echo "Use one of link, unlink"
+    exit 1
+esac

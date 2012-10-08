@@ -1,0 +1,25 @@
+#!/usr/bin/env zsh
+# Usage: ag acksed [PATTERN] [options]
+# Summary: Search and replace across files using Ack and sed.
+# Help: Find files using Ack matching a pattern, and then
+# search and replace that pattern in those files.
+#
+# The pattern is a regular expression replacement pattern
+# recognized by sed. Any other options are passed along to
+# ack.
+#
+# The search query for Ack is the first part of PATTERN.
+#
+# EXAMPLES
+#
+# Search for all Ruby files containing "foo" in ./app/helpers
+# and replace "foo" with "bar":
+#
+#     ag acksed 's/foo/bar/g' --ruby app/helpers
+#
+
+set -e
+pattern=$1
+shift 1
+query=$(echo $pattern | cut -f2 -d'/')
+ack -l --print0 "$query" $@ | xargs -0 -n 1 sed -i '' -e "$pattern"

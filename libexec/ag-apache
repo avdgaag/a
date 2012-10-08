@@ -1,0 +1,40 @@
+#!/usr/bin/env zsh
+# Usage: ag apache [action]
+# Summary: Manage or configure Apache
+# Help: Use for common Apache actions.
+# Available operations:
+#
+# restart: attempt a graceful restart
+# config:  edit httpd.conf
+# check:   test configuration syntax
+# vhosts:  edit httpd-vhosts.conf
+
+set -e
+
+# Provide ag completions
+if [ "$1" = "--complete" ]; then
+  echo "restart"
+  echo "vhosts"
+  echo "config"
+  echo "check"
+  exit
+fi
+
+case "$1" in
+  restart)
+    sudo apachectl graceful
+    ;;
+  check)
+    sudo apachectl configtest
+    ;;
+  config)
+    sudo vim /etc/apache2/httpd.conf
+    ;;
+  vhosts)
+    sudo vim /etc/apache2/extra/httpd-vhosts.conf
+    ;;
+  *)
+    echo "Unrecognized subcommand $@."
+    echo "Use one of restart, check, config or vhosts."
+    exit 1;
+esac

@@ -1,0 +1,254 @@
+#!/usr/bin/env ruby
+# Usage: ag gem PATH
+# Summary: generate a skeleton Ruby gem in PATH
+# Help: Generate a set of files and directories in ./PATH
+# to quickly build a new Ruby gem, not unlike the `bundle gem`
+# command -- but with some extras.
+#
+# Example usage:
+#
+#     ag gem my_lib
+#
+# This will generate a new gem called
+# MyLib in ./my_lib.
+#
+# This handles the following setup for you:
+#
+# * Bundler and a sane Gemfile
+# * Testing with Rspec
+# * Documentation with Yard
+# * HISTORY, LICENSE and README files with prefilled links
+#   and notes.
+# * Rake tasks for tests, docs and gems.
+# * Gemspec
+# * Library layout and default version file
+# * Git repo initialisation
+# * Configuration for travis-ci.org
+
+require 'fileutils'
+NAME = ARGV[0]
+MODULE_NAME = NAME.gsub(/(?:^|_)(.)/) { $1.upcase }
+ROOT = File.join(FileUtils.pwd, NAME)
+
+def in_dir(dir)
+  old_dir = FileUtils.pwd
+  FileUtils.cd dir
+  yield
+  FileUtils.cd old_dir
+end
+
+def create_file(filename, content)
+  puts "create #{filename}"
+  path = File.join(ROOT, filename)
+  FileUtils.mkdir_p File.dirname(path)
+  File.open(path, 'w') do |f|
+    f.write content
+  end
+end
+
+create_file '.rspec', <<-EOS
+--format progress
+--color
+--order rand
+-Ilib
+-Ispec
+-r spec_helper
+EOS
+
+create_file '.yardopts', <<-EOS
+--no-private
+--title "#{MODULE_NAME}"
+--readme README.md
+--markup markdown
+--markup-provider kramdown
+-
+HISTORY.md
+LICENSE
+EOS
+
+create_file 'Rakefile', <<-EOS
+#!/usr/bin/env rake
+require 'bundler'
+Bundler::GemHelper.install_tasks
+Bundler.setup
+
+desc 'Default: run specs.'
+task :default => :spec
+
+require 'rspec/core/rake_task'
+desc 'Run specs'
+RSpec::Core::RakeTask.new
+
+require 'yard'
+desc 'Generate API docs'
+YARD::Rake::YardocTask.new
+EOS
+
+create_file '.travis.yml', <<-EOS
+language: ruby
+rvm:
+  - 1.8.7
+  - 1.9.2
+  - 1.9.3
+  - rbx-18mode
+  - rbx-19mode
+EOS
+
+create_file "#{NAME}.gemspec", <<-GEMSPEC
+# -*- encoding: utf-8 -*-
+require File.expand_path('../lib/#{NAME}/version', __FILE__)
+
+Gem::Specification.new do |s|
+  # Metadata
+  s.name        = '#{NAME}'
+  s.version     = #{MODULE_NAME}::VERSION
+  s.platform    = Gem::Platform::RUBY
+  s.authors     = ['Arjan van der Gaag']
+  s.email       = %q{arjan@arjanvandergaag.nl}
+  s.description = %q{TODO description}
+  s.homepage    = %q{http://avdgaag.github.com/#{NAME}}
+  s.summary     = <<-EOS
+TODO summary
+EOS
+
+  # Files
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.require_paths = ["lib"]
+
+  # Rdoc
+  s.rdoc_options = ['--charset=UTF-8']
+  s.extra_rdoc_files = [
+     'LICENSE',
+     'README.md',
+     'HISTORY.md'
+  ]
+
+  # Dependencies
+  s.add_development_dependency 'kramdown'
+  s.add_development_dependency 'yard'
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'rake'
+end
+GEMSPEC
+
+create_file 'Gemfile', <<-EOS
+source :rubygems
+gemspec
+EOS
+
+create_file 'README.md', <<-EOS
+# #{MODULE_NAME} [![Build Status](https://secure.travis-ci.org/avdgaag/#{NAME}.png?branch=master)](http://travis-ci.org/avdgaag/#{NAME})
+
+## Introduction
+
+TODO description
+
+## Installation
+
+Gista is distributed as a Ruby gem, which should be installed on most Macs and
+Linux systems. Once you have ensured you have a working installation of Ruby
+and Ruby gems, install the gem as follows from the command line:
+
+    $ gem install #{NAME}
+
+## Usage
+
+TODO usage
+
+### Documentation
+
+See the inline [API
+docs](http://rubydoc.info/github/avdgaag/#{NAME}/master/frames) for more
+information.
+
+## Other
+
+### Note on Patches/Pull Requests
+
+1. Fork the project.
+2. Make your feature addition or bug fix.
+3. Add tests for it. This is important so I don't break it in a future version
+   unintentionally.
+4. Commit, do not mess with rakefile, version, or history. (if you want to have
+   your own version, that is fine but bump version in a commit by itself I can
+   ignore when I pull)
+5. Send me a pull request. Bonus points for topic branches.
+
+### Issues
+
+Please report any issues, defects or suggestions in the [Github issue
+tracker](https://github.com/avdgaag/#{NAME}/issues).
+
+### What has changed?
+
+See the [HISTORY](https://github.com/avdgaag/#{NAME}/blob/master/HISTORY.md) file
+for a detailed changelog.
+
+### Credits
+
+Created by: Arjan van der Gaag
+URL: [http://arjanvandergaag.nl](http://arjanvandergaag.nl)
+Project homepage: [http://avdgaag.github.com/#{NAME}](http://avdgaag.github.com/#{NAME})
+Date: april 2012
+License: [MIT-license](https://github.com/avdgaag/#{NAME}/blob/master/LICENSE) (same as Ruby)
+EOS
+
+create_file 'HISTORY.md', <<-EOS
+# HISTORY
+
+## 0.1.0
+
+* Initial release
+
+EOS
+
+create_file 'LICENSE', <<-EOS
+Copyright (C) #{Time.now.year} #{`whoami`}
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+EOS
+
+create_file '.gitignore', <<-EOS
+pkg
+.bundle
+.yardoc
+doc
+EOS
+
+create_file "lib/#{NAME}.rb", <<-EOS
+require '#{NAME}/version'
+
+module #{MODULE_NAME}
+end
+EOS
+
+create_file "lib/#{NAME}/version.rb", <<-EOS
+module #{MODULE_NAME}
+  VERSION = '0.0.1'
+end
+EOS
+
+in_dir ROOT do
+  system 'bundle install'
+  system 'git init .'
+  system 'git add .'
+  system 'git commit -m "Initial commit"'
+end

@@ -1,0 +1,108 @@
+#!/usr/bin/env zsh
+# Usage: ag tmux NAME [PATH]
+# Summary: Create or re-attach to customized tmux session
+# Help: Use to set up a customized tmux session, complete
+# with named windows and panes ready for Rails development.
+#
+# When a session named NAME already exists, re-attach to it.
+#
+# EXAMPLES
+#
+# Given a project directory ~/code/project, create
+# a tmux session called "project" for it:
+#
+#     ag tmux project
+#
+# Given the same directory, create a session called "FooBar"
+# in that directory:
+#
+#     ag tmux FooBar project
+#
+# SETUP
+#
+# The tmux environment that is set up comes with three windows:
+#
+# * editor (one pane for tests, one with Vim started)
+# * console (one pane with git logs, one with an empty shell)
+# * services (for running `rails s` or `foreman start`)
+#
+# It also checks to see if you are in a project using Bundler,
+# with the `--binstubs` option active. If so, it prepends the
+# PATH/bin directory to PATH.
+
+# Provide ag completions
+if [ "$1" = "--complete" ]; then
+  ls /Users/$(whoami)/code
+fi
+
+# Require at least one argument
+if [ -z "$1" ]; then
+    echo "Usage: hack NAME [PATH]"
+    exit 1
+fi
+
+set -u
+
+PROJECT=$1
+
+# See if there is a .bundle directory with configuration for binstubs path. If there is,
+# tell the current tmux pane to add it to the local PATH.
+function add_binstubs_to_load_path {
+  local DIR=`ruby -r YAML -e "print YAML.load_file(ARGV[0] + '/.bundle/config')['BUNDLE_BIN'] rescue exit 1" $2`
+  if [ "${DIR}" != "" ]; then
+      local NEW_PATH="$2/$DIR"
+      tmux send-keys -t $1 "export PATH=$NEW_PATH:\$PATH" C-m
+  fi
+}
+
+tmux has-session -t $PROJECT
+if [ $? != 0 ]; then
+
+    PROJECT_DIR=${2:-"/Users/$(whoami)/code/$PROJECT"}
+
+    # Make sure the project path actually exists before starting tmux
+    if [ ! -d $PROJECT_DIR ]; then
+        echo "Project path $PROJECT_DIR could not be found."
+        exit 1
+    fi
+
+    # New session with a window named "editor" in the right directory
+    tmux new-session -s $PROJECT -n editor -d
+    tmux send-keys -t $PROJECT "cd $PROJECT_DIR" C-m
+    add_binstubs_to_load_path $PROJECT $PROJECT_DIR
+    tmux send-keys -t $PROJECT "clear" C-m
+
+    # Set up split window at 10%, change into project directory
+    tmux split-window -h -p 80 -t $PROJECT
+    tmux send-keys -t $PROJECT:1.2 "cd $PROJECT_DIR" C-m
+    add_binstubs_to_load_path $PROJECT:1.2 $PROJECT_DIR
+    tmux send-keys -t $PROJECT:1.2 "clear" C-m
+
+    # Launch Vim in second window
+    tmux send-keys -t $PROJECT:1.2 'vim' C-m
+
+    # Set up new window called "console" and change into
+    # project directory
+    tmux new-window -n console -t $PROJECT
+
+    # Start live git log graph in first pane
+    tmux send-keys -t $PROJECT:2 "cd $PROJECT_DIR" C-m
+    add_binstubs_to_load_path $PROJECT:2 $PROJECT_DIR
+    tmux send-keys -t $PROJECT:2 "clear && glog" C-m
+
+    # Create second pane in second window with normal shell
+    tmux split-window -h -p 50 -t $PROJECT
+    tmux send-keys -t $PROJECT:2.2 "cd $PROJECT_DIR" C-m
+    add_binstubs_to_load_path $PROJECT:2.2 $PROJECT_DIR
+    tmux send-keys -t $PROJECT:2.2 "clear" C-m
+
+    # Create new window for foreman or development server
+    tmux new-window -n services -t $PROJECT
+    add_binstubs_to_load_path $PROJECT:3 $PROJECT_DIR
+    tmux send-keys -t $PROJECT:3 "clear" C-m
+
+    # Always start in first window
+    tmux select-window -t $PROJECT:1
+fi
+
+tmux attach -t $PROJECT

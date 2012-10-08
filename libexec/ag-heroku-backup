@@ -1,0 +1,27 @@
+#!/usr/bin/env zsh
+# Usage: ag heroku-backup APP
+# Summary: Download a database dump from a Heroku application
+# Help: Given an Heroku application APP, create a new database dump using the
+# pgbackups add-on, and download it to a local file ./APP.dump
+#
+# EXAMPLES
+#
+# Given an application called "blog", download a dump of its database to "blog.dump":
+#
+#     ag heroku-backup blog
+#
+
+set -e
+
+# Provide ag completions
+if [ "$1" = "--complete" ]; then
+  exec /usr/bin/heroku apps | grep -v -E '^===|^$' | cut -f1 -d ' '
+fi
+
+if [ -z "$1" ]; then
+  echo "No app specified."
+  exit 1
+fi
+
+/usr/bin/heroku pgbackups:capture --expire --app $1
+wget -O $1.dump $(/usr/bin/heroku pgbackups:url --app $1)

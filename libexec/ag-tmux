@@ -37,13 +37,13 @@ fi
 
 # Require at least one argument
 if [ -z "$1" ]; then
-    echo "Usage: hack NAME [PATH]"
-    exit 1
+  PROJECT=$(basename $PWD)
+else 
+  PROJECT=$1
 fi
 
 set -u
 
-PROJECT=$1
 
 # See if there is a .bundle directory with configuration for binstubs path. If there is,
 # tell the current tmux pane to add it to the local PATH.

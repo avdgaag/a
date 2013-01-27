@@ -43,8 +43,11 @@ if [ $# -gt 0 ]; then
 fi
 
 # Parse options
-while getopts f:d: OPT; do
+while getopts t:f:d: OPT; do
   case "$OPT" in
+    t)
+      TABLE_NAME=$OPTARG
+      ;;
     d)
       DATABASE_NAME=$OPTARG
       ;;
@@ -52,7 +55,7 @@ while getopts f:d: OPT; do
       FILENAME=$OPTARG
       ;;
     \?)
-      echo "Unknown options. Only -f and -d are allowed."
+      echo "Unknown options. Only -f, -t and -d are allowed."
       exit 1
       ;;
   esac
@@ -76,6 +79,9 @@ case "$subcommand" in
   "restore")
     pg_restore --clean --no-acl --no-owner -d "$DATABASE_NAME" "$FILENAME"
     ;;
+  "schema")
+    psql -d "$DATABASE_NAME" -c "\\d $TABLE_NAME"
+    ;;
   "kill")
     ps aux | grep "$DATABASE_NAME" | grep -v grep | awk "{print \$2}" | xargs kill
     ;;
@@ -84,6 +90,11 @@ case "$subcommand" in
     ;;
   "stop")
     pg_ctl -D /usr/local/var/postgres stop -s -m fast
+    ;;
+  "heroku")
+    /usr/bin/heroku pgbackups:capture --expire --app "$1"
+    wget -O "$1".dump $(/usr/bin/heroku pgbackups:url --app "$1")
+    pg_restore --clean --no-acl --no-owner -d "$DATABASE_NAME" "$1".dump
     ;;
   *)
     echo "Unrecognized subcommand $@."

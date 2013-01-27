@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+# Usage: ag schema TABLE_NAME
+# Summary: Show table from db/schema.rb
+# Help: Display the database schema for a given table.
+#
+# This scans the db/schema.rb file for ActiveRecord::Migration-style table
+# definitions and shows the contents of the definition for the table given as
+# first argument.
+
+# Provide ag completions
+if [ "$1" = "--complete" ]; then
+  awk '/create_table/ { print $2 }' < db/schema.rb | tr -d '",'
+  exit
+fi
+
+awk "/^  create_table \"$1\"/,/^  end/ { print }" < db/schema.rb

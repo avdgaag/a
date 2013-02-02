@@ -1,0 +1,29 @@
+#!/bin/sh
+# Usage: ag heroku-postgres APP [ARGS]
+# Summary: Connect to Heroku database using psql
+# Help: Given an Heroku application APP, connect to its default database using
+# the psql CLI and passing along any extra arguments ARGS. This allows you
+# to easily execute a single command or a SQL file on the remote database.
+#
+# EXAMPLES
+#
+# Given an application called "blog", run the file "truncate.sql":
+# 
+#   ag heroku-postgres blog -f truncate.sql
+# 
+# Or run a single command:
+#
+#   ag heroku-postgres blog -c 'drop table posts;'
+
+set -e
+
+APP="$1"
+shift 1
+URL=`heroku config:get DATABASE_URL -a $APP`
+USERNAME=`echo $URL | awk -F 'postgres://|[:@/]' '{ print $2 }'`
+PASSWORD=`echo $URL | awk -F 'postgres://|[:@/]' '{ print $3 }'`
+HOSTNAME=`echo $URL | awk -F 'postgres://|[:@/]' '{ print $4 }'`
+PORT=`echo $URL | awk -F 'postgres://|[:@/]' '{ print $5 }'`
+DATABASE=`echo $URL | awk -F 'postgres://|[:@/]' '{ print $6 }'`
+
+PGPASSWORD="$PASSWORD" psql -U "$USERNAME" -h "$HOSTNAME" -d "$DATABASE" -p "$PORT" "$@"

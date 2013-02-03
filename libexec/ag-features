@@ -1,0 +1,51 @@
+#!/usr/bin/awk -f
+# Usage: ag features FILENAME
+# Summary: Split a single text file with features into mutliple feature files
+# Help: Generate multiple executable feature files in ./features from a single
+# text file.
+#
+# Example usage:
+#
+#   ag featuers my_features.txt
+#
+# Given a file with two feature descriptions:
+#
+#   Feature: foo
+#     ...
+#   Feature: bar
+#     ...
+#
+# This will generate a file `features/foo.feature` containing:
+#
+#   Feature: foo
+#     ...
+#
+# And a file `features/bar.feature` containing:
+#
+#   Feature: bar
+#     ...
+#
+# Feature filenames have no special escaping (TODO), but spaces are replaced
+# with dashes.
+
+# When a line contains "Feature: ", we construct a new filename we are going to
+# write to.
+/Feature: / {
+  filename = "features/" tolower($2)
+  for(i = 3; i <= NF; i++) {
+    filename = filename "-" tolower($i)
+  }
+  filename = filename ".feature"
+}
+
+# Close the last file when we open a new file, to prevent errors about too many
+# files open.
+last_filename != filename {
+  close(last_filename)
+  last_filename = filename
+}
+
+# Print every line in its entirety to the currently open file
+filename {
+  print >>filename
+}

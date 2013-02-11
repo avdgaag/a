@@ -29,11 +29,13 @@ set -e
 
 # Provide ag completions
 if [ "$1" = "--complete" ]; then
+  echo "psql"
   echo "dump"
   echo "restore"
   echo "kill"
   echo "start"
   echo "stop"
+  echo "heroku"
   exit
 fi
 

@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 # Usage: ag rails NAME
 # Summary: Create a new Rails application using custom template
 # Help: Issues the `rails new` command with a preset Rails template

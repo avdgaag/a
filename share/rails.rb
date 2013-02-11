@@ -1,22 +1,16 @@
 gem_group :development, :test do
-  gem 'jasmine'
-  gem 'factory_girl_rails'
-  gem 'rspec-rails'
-end
-
-gem_group :development do
-  gem 'guard-rspec'
-  gem 'guard-pow'
-  gem 'jasmine-headless-webkit'
-  gem 'guard-jasmine-headless-webkit'
-  gem 'growl'
+  gem 'konacha'
+  gem 'factory_girl_rails', '~> 4.2'
+  gem 'rspec-rails', '~> 2.12'
+  gem 'better_errors'
+  gem 'quiet_assets'
 end
 
 gem_group :test do
   gem 'database_cleaner'
-  gem 'capybara'
+  gem 'capybara', '~> 2.0'
   gem 'shoulda-matchers'
-  gem 'capybara-webkit'
+  gem 'capybara-webkit', '~> 0.14'
 end
 
 gem_group :assets do
@@ -32,6 +26,8 @@ gem 'draper'
 gem 'kaminari'
 gem 'simple-navigation'
 gem 'simple_form'
+gem 'thin'
+gem 'cancan'
 
 # Rspec support files
 create_file 'spec/support/capybara_headless_webkit', <<-RUBY
@@ -103,7 +99,7 @@ end
 RUBY
 
 create_file 'app/decorators/ApplicationDecorator', <<-RUBY
-class ApplicationDecorator < Draper::Base
+class ApplicationDecorator < Draper::Decorator
 end
 RUBY
 
@@ -128,7 +124,6 @@ generate 'devise:install'
 generate 'devise user'
 generate 'simple_form:install'
 generate 'navigation_config'
-generate 'jasmine:install'
 generate 'kaminari:config'
 run 'bundle exec guard init'
 

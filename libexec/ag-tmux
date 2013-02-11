@@ -55,7 +55,7 @@ function add_binstubs_to_load_path {
   fi
 }
 
-tmux has-session -t $PROJECT
+tmux has-session -t $PROJECT 2> /dev/null
 if [ $? != 0 ]; then
 
     PROJECT_DIR=${2:-"/Users/$(whoami)/code/$PROJECT"}

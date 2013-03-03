@@ -76,7 +76,7 @@ case "$subcommand" in
     psql -d "$DATABASE_NAME"
     ;;
   "dump")
-    pg_dump -Fc --no-acl --no-owner -d "$DATABASE_NAME"
+    pg_dump -Fc --no-acl --no-owner "$DATABASE_NAME"
     ;;
   "restore")
     pg_restore --clean --no-acl --no-owner -d "$DATABASE_NAME" "$FILENAME"

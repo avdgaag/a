@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+# Usage: ag dburi [PATH]
+# Summary: Generate a database connection URI
+# Help: Read a Rails database configuration file to generate a connection URI
+# for use with other applications.
+#
+# EXAMPLES
+#
+# Read the configuration from ./config/database.yml:
+#
+#   $ ag dburi
+#   mysql://username:password@hostname:port/database
+#
+# Read the configuration from /other/path/config/database.yml:
+# 
+#   $ ag dburi /other/path
+#   postgres://username:password@hostname:port/database
+#
+# Customize the environment to read:
+#
+#   $ RAILS_ENV=production ag aburi
+#   postgres://username:password@hostname:port/database
+# 
+
+require 'yaml'
+path_to_config_file = File.join(ARGV.first || Dir.pwd, 'config', 'database.yml')
+settings = YAML.load_file(path_to_config_file).fetch(ENV.fetch('RAILS_ENV', 'development'))
+
+adapter  = settings.fetch('adapter')
+username = settings.fetch('username')
+password = settings.fetch('password', nil)
+hostname = settings.fetch('host', 'localhost')
+port     = settings.fetch('port', nil)
+database = settings.fetch('database')
+
+output = adapter + '://'
+output << username
+output << ':' << password if password
+output << '@' << hostname
+output << ':' << port if port
+output << '/' << database
+
+puts output

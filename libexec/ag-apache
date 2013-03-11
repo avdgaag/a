@@ -4,15 +4,20 @@
 # Help: Use for common Apache actions.
 # Available operations:
 #
-# restart: attempt a graceful restart
-# config:  edit httpd.conf
-# check:   test configuration syntax
-# vhosts:  edit httpd-vhosts.conf
+# config:        edit httpd.conf
+# check:         test configuration syntax
+# vhosts:        edit httpd-vhosts.conf
+#
+# Furthermore, start, stop, graceful and graceful-stop are
+# passed along directly to apachectl.
 
 set -e
 
 # Provide ag completions
 if [ "$1" = "--complete" ]; then
+  echo "start"
+  echo "graceful-stop"
+  echo "stop"
   echo "restart"
   echo "vhosts"
   echo "config"
@@ -21,6 +26,15 @@ if [ "$1" = "--complete" ]; then
 fi
 
 case "$1" in
+  start)
+    sudo apachectl start
+    ;;
+  graceful-stop)
+    sudo apachectl graceful-stop
+    ;;
+  stop)
+    sudo apachectl stop
+    ;;
   restart)
     sudo apachectl graceful
     ;;
@@ -35,6 +49,6 @@ case "$1" in
     ;;
   *)
     echo "Unrecognized subcommand $@."
-    echo "Use one of restart, check, config or vhosts."
+    echo "Use ag help apache for usage information"
     exit 1;
 esac

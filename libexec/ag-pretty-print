@@ -1,0 +1,21 @@
+#!/bin/sh
+# Usage: ag pretty-print [OPTIONS] PATH
+# Summary: Use pygments to add syntax highlighting to a file
+# Help: A simple wrapper script around pygmentize to print content (a file or
+# STDIN) with syntax highlighting.
+#
+# EXAMPLES
+#
+# Highlight a file and infer lexer from filename:
+#
+#   $ ag pretty-print myfile.rb
+#
+# Highlight a file and specify explicit lexer to use:
+# 
+#   $ ag pretty-print -l rb myfile
+#
+# Highlight content from standard input:
+#
+#   $ cat myfile | ag pretty-print -l rb
+# 
+pygmentize -O 'bg=dark,style=vim' -f terminal256 "$@"

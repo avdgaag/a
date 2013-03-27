@@ -1,0 +1,33 @@
+#!/usr/bin/awk -f
+# Usage: ag mdtoc file1 file2 file3...
+# Summary: Provide a very simple Markdown table of contents
+# Help: Loop over all files and output a table of contents for based on
+# Markdown-style headers.
+#
+# Example:
+#
+# Given a file `example.md` like this:
+#
+#   # Heading 1
+#
+#   Lorem ipsum
+#
+#   ## Heading 2
+#
+#   Foo bar baz
+#
+# Running `ag mdtoc example.md` will output:
+#
+#   Heading 1
+#     Heading 2
+#
+/^#{1,2} / {
+  indent_level = gsub("#", "")
+
+  spacing = ""
+  for(i = 1; i < indent_level; i++) {
+    spacing = spacing "  "
+  }
+
+  print spacing $0
+}

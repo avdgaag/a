@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+# Usage: ag json FILENAME
+# Summary: pretty-print JSON read from STDIN or one or more files
+# Help: Simple formatting of JSON content.
+#
+# EXAMPLES
+#
+# Format a single file:
+#
+#     ag json my_file.json
+#
+# Format multiple files:
+# 
+#     ag json file1.json file2.json
+#
+# Format from STDIN:
+#
+#     curl http://api.com/content.json | ag json
+#
+require 'json'
+begin
+  puts JSON.pretty_generate(JSON.parse(ARGF.read))
+rescue JSON::ParserError
+  abort 'Input could not be parsed as valid JSON.'
+end

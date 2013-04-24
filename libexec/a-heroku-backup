@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Usage: ag heroku-backup APP
+# Usage: a heroku-backup APP
 # Summary: Download a database dump from a Heroku application
 # Help: Given an Heroku application APP, create a new database dump using the
 # pgbackups add-on, and download it to a local file ./APP.dump
@@ -8,12 +8,12 @@
 #
 # Given an application called "blog", download a dump of its database to "blog.dump":
 #
-#     ag heroku-backup blog
+#     a heroku-backup blog
 #
 
 set -e
 
-# Provide ag completions
+# Provide a completions
 if [ "$1" = "--complete" ]; then
   exec /usr/bin/heroku apps | grep -v -E '^===|^$' | cut -f1 -d ' '
   exit

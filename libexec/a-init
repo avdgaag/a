@@ -45,10 +45,10 @@ if [ -z "$print" ]; then
     ;;
   esac
 
-  { echo "# Load ag automatically by adding"
+  { echo "# Load a automatically by adding"
     echo "# the following to ${profile}:"
     echo
-    echo "eval \"\$(${_AG_ROOT}/bin/ag init -)\""
+    echo "eval \"\$(${_AG_ROOT}/bin/a init -)\""
     echo
   } >&2
 
@@ -59,14 +59,14 @@ echo "export PATH=\"\${PATH}:${_AG_ROOT}/bin\""
 
 case "$shell" in
 bash | zsh )
-  echo "source \"$root/completions/ag.${shell}\""
+  echo "source \"$root/completions/a.${shell}\""
   ;;
 esac
 
-commands=(`ag commands --sh`)
+commands=(`a commands --sh`)
 IFS="|"
 cat <<EOS
-ag() {
+a() {
   local command="\$1"
   if [ "\$#" -gt 0 ]; then
     shift
@@ -74,9 +74,9 @@ ag() {
 
   case "\$command" in
   ${commands[*]})
-    eval \`ag "sh-\$command" "\$@"\`;;
+    eval \`a "sh-\$command" "\$@"\`;;
   *)
-    command ag "\$command" "\$@";;
+    command a "\$command" "\$@";;
   esac
 }
 EOS

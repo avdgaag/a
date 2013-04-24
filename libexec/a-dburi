@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Usage: ag dburi [PATH]
+# Usage: a dburi [PATH]
 # Summary: Generate a database connection URI
 # Help: Read a Rails database configuration file to generate a connection URI
 # for use with other applications.
@@ -8,17 +8,17 @@
 #
 # Read the configuration from ./config/database.yml:
 #
-#   $ ag dburi
+#   $ a dburi
 #   mysql://username:password@hostname:port/database
 #
 # Read the configuration from /other/path/config/database.yml:
 # 
-#   $ ag dburi /other/path
+#   $ a dburi /other/path
 #   postgres://username:password@hostname:port/database
 #
 # Customize the environment to read:
 #
-#   $ RAILS_ENV=production ag aburi
+#   $ RAILS_ENV=production a aburi
 #   postgres://username:password@hostname:port/database
 # 
 

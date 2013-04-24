@@ -1,12 +1,12 @@
 #!/usr/bin/awk -f
-# Usage: ag features FILENAME
+# Usage: a features FILENAME
 # Summary: Split a single text file with features into mutliple feature files
 # Help: Generate multiple executable feature files in ./features from a single
 # text file.
 #
 # Example usage:
 #
-#   ag featuers my_features.txt
+#   a featuers my_features.txt
 #
 # Given a file with two feature descriptions:
 #

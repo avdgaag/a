@@ -1,5 +1,5 @@
 #!/bin/sh
-# Usage: ag heroku-postgres APP [ARGS]
+# Usage: a heroku-postgres APP [ARGS]
 # Summary: Connect to Heroku database using psql
 # Help: Given an Heroku application APP, connect to its default database using
 # the psql CLI and passing along any extra arguments ARGS. This allows you
@@ -9,11 +9,11 @@
 #
 # Given an application called "blog", run the file "truncate.sql":
 # 
-#   ag heroku-postgres blog -f truncate.sql
+#   a heroku-postgres blog -f truncate.sql
 # 
 # Or run a single command:
 #
-#   ag heroku-postgres blog -c 'drop table posts;'
+#   a heroku-postgres blog -c 'drop table posts;'
 
 set -e
 

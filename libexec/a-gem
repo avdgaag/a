@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Usage: ag gem PATH
+# Usage: a gem PATH
 # Summary: generate a skeleton Ruby gem in PATH
 # Help: Generate a set of files and directories in ./PATH
 # to quickly build a new Ruby gem, not unlike the `bundle gem`
@@ -7,7 +7,7 @@
 #
 # Example usage:
 #
-#     ag gem my_lib
+#     a gem my_lib
 #
 # This will generate a new gem called
 # MyLib in ./my_lib.

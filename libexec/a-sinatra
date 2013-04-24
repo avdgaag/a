@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Usage: ag sinatra PATH
+# Usage: a sinatra PATH
 # Summary: generate a skeleton Sinatra application in PATH
 # Help: Generate a set of files and directories in ./PATH
 # to quickly build a new web application with the Sinatra
@@ -7,7 +7,7 @@
 #
 # Example usage:
 #
-#     ag sinatra my_app
+#     a sinatra my_app
 #
 # This will generate an application called
 # MyApp in ./my_app.

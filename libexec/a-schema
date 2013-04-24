@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Usage: ag schema TABLE_NAME
+# Usage: a schema TABLE_NAME
 # Summary: Show table from db/schema.rb
 # Help: Display the database schema for a given table.
 #
@@ -7,7 +7,7 @@
 # definitions and shows the contents of the definition for the table given as
 # first argument.
 
-# Provide ag completions
+# Provide a completions
 if [ "$1" = "--complete" ]; then
   awk '/create_table/ { print $2 }' < db/schema.rb | tr -d '",'
   exit

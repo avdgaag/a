@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Usage: ag pow link
+# Usage: a pow link
 # Summary: Manage Pow web server
 # Help: Available subcommands:
 #
@@ -7,7 +7,7 @@
 # unlink: remove symlink to current directory from ~/.pow
 #
 
-# Provide ag completions
+# Provide a completions
 if [ "$1" = "--complete" ]; then
   echo "link"
   echo "unlink"

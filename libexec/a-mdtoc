@@ -1,5 +1,5 @@
 #!/usr/bin/awk -f
-# Usage: ag mdtoc file1 file2 file3...
+# Usage: a mdtoc file1 file2 file3...
 # Summary: Provide a very simple Markdown table of contents
 # Help: Loop over all files and output a table of contents for based on
 # Markdown-style headers.
@@ -16,7 +16,7 @@
 #
 #   Foo bar baz
 #
-# Running `ag mdtoc example.md` will output:
+# Running `a mdtoc example.md` will output:
 #
 #   Heading 1
 #     Heading 2

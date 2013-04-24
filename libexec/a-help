@@ -2,11 +2,11 @@
 set -e
 
 print_summaries() {
-  for file in $_AG_ROOT/libexec/ag-*; do
+  for file in $_AG_ROOT/libexec/a-*; do
     if [ ! -h $file ]; then
       local summary=$(grep "^# Summary:" $file | cut -d ' ' -f3-)
       if [ -n "$summary" ]; then
-        local name=$(basename $file | sed 's/ag-//')
+        local name=$(basename $file | sed 's/a-//')
         echo "$name" | awk '{ printf "   %-20s   ", $1}'
         echo -n $summary
         echo
@@ -27,25 +27,25 @@ print_help() {
   fi
 }
 
-# Provide ag completions
+# Provide a completions
 if [ "$1" = "--complete" ]; then
-  exec "ag-commands"
+  exec "a-commands"
   exit
 fi
 
 case "$1" in
-"") echo "Usage: ag <command> [<args>]
+"") echo "Usage: a <command> [<args>]
 
-Some useful ag commands are:
+Some useful a commands are:
 $(print_summaries)
 
-See 'ag help <command>' for information on a specific command."
+See 'a help <command>' for information on a specific command."
 ;;
 *)
-  command_path="$(command -v "$_AG_ROOT/libexec/ag-$1" || true)"
+  command_path="$(command -v "$_AG_ROOT/libexec/a-$1" || true)"
   if [ -n "$command_path" ]; then
-    print_help "$_AG_ROOT/libexec/ag-$1"
+    print_help "$_AG_ROOT/libexec/a-$1"
   else
-    echo "ag: no such command \`$1'"
+    echo "a: no such command \`$1'"
   fi
 esac

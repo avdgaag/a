@@ -26,12 +26,12 @@ export PATH="${libexec_path}:$PATH"
 command="$1"
 case "$command" in
 "" | "-h" | "--help" )
-  exec ag-help
+  exec a-help
   ;;
 * )
-  command_path="$(command -v "ag-$command" || true)"
+  command_path="$(command -v "a-$command" || true)"
   if [ ! -x "$command_path" ]; then
-    echo "ag: no such command \`$command'" >&2
+    echo "a: no such command \`$command'" >&2
     exit 1
   fi
 

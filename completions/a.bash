@@ -1,14 +1,14 @@
-_ag() {
+_a() {
   COMPREPLY=()
   local word="${COMP_WORDS[COMP_CWORD]}"
 
   if [ "$COMP_CWORD" -eq 1 ]; then
-    COMPREPLY=( $(compgen -W "$(ag commands)" -- "$word") )
+    COMPREPLY=( $(compgen -W "$(a commands)" -- "$word") )
   else
     local command="${COMP_WORDS[1]}"
-    local completions="$(ag completions "$command")"
+    local completions="$(a completions "$command")"
     COMPREPLY=( $(compgen -W "$completions" -- "$word") )
   fi
 }
 
-complete -F _ag ag
+complete -F _a a

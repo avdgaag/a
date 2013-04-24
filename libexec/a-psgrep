@@ -1,5 +1,5 @@
 #!/bin/sh
-# Usage: ag psgrep PATTERN
+# Usage: a psgrep PATTERN
 # Summary: Find running processes using grep
 # Help: This is a tiny wrapper to search for a regex PATTERN
 # in the output of `ps aux`, excluding the grep process itself.
@@ -8,7 +8,7 @@
 #
 # Show all Ruby processes:
 #
-#     ag psgrep 'ruby'
+#     a psgrep 'ruby'
 #
 
-ps aux | awk '/'"$@"'/ && !/ag-psgrep/ { $1 = ""; for(i=3; i <= 10; i++) { $i = "" }; gsub(/^ +|  +/, " ", $0); print $0 }'
+ps aux | awk '/'"$@"'/ && !/a-psgrep/ { $1 = ""; for(i=3; i <= 10; i++) { $i = "" }; gsub(/^ +|  +/, " ", $0); print $0 }'

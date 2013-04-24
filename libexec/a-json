@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Usage: ag json FILENAME
+# Usage: a json FILENAME
 # Summary: pretty-print JSON read from STDIN or one or more files
 # Help: Simple formatting of JSON content.
 #
@@ -7,15 +7,15 @@
 #
 # Format a single file:
 #
-#     ag json my_file.json
+#     a json my_file.json
 #
 # Format multiple files:
 # 
-#     ag json file1.json file2.json
+#     a json file1.json file2.json
 #
 # Format from STDIN:
 #
-#     curl http://api.com/content.json | ag json
+#     curl http://api.com/content.json | a json
 #
 require 'json'
 begin

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Usage: ag commands
-# Summary: List all ag commands
-# Help: This command is mostly used for autocompletion in various shells, and for `ag help`.
+# Usage: a commands
+# Summary: List all a commands
+# Help: This command is mostly used for autocompletion in various shells, and for `a help`.
 # Also, this command helps find commands that are named the same as potentially builtin shell commands (which, cd, etc)
 
 set -e
 
-# Provide ag completions
+# Provide a completions
 if [ "$1" = "--complete" ]; then
   echo --sh
   echo --no-sh
@@ -24,8 +24,8 @@ fi
 shopt -s nullglob
 
 { for path in ${PATH//:/$'\n'}; do
-    for command in "${path}/ag-"*; do
-      command="${command##*ag-}"
+    for command in "${path}/a-"*; do
+      command="${command##*a-}"
       if [ -n "$sh" ]; then
         if [ ${command:0:3} = "sh-" ]; then
           echo ${command##sh-}

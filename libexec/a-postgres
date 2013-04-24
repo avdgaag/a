@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Usage: ag postgres [subcommand] [-d DATABASE_NAME] [-f FILENAME]
+# Usage: a postgres [subcommand] [-d DATABASE_NAME] [-f FILENAME]
 # Summary: Common operations with PostgreSQL databases
 # Help: Connect to, manage or import/export a PostgreSQL database.
 #
@@ -23,11 +23,11 @@
 #
 # Example usage:
 #
-#     ag postgres psql -d mydb
+#     a postgres psql -d mydb
 
 set -e
 
-# Provide ag completions
+# Provide a completions
 if [ "$1" = "--complete" ]; then
   echo "psql"
   echo "dump"

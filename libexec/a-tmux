@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Usage: ag tmux NAME [PATH]
+# Usage: a tmux NAME [PATH]
 # Summary: Create or re-attach to customized tmux session
 # Help: Use to set up a customized tmux session, complete
 # with named windows and panes ready for Rails development.
@@ -11,12 +11,12 @@
 # Given a project directory ~/code/project, create
 # a tmux session called "project" for it:
 #
-#     ag tmux project
+#     a tmux project
 #
 # Given the same directory, create a session called "FooBar"
 # in that directory:
 #
-#     ag tmux FooBar project
+#     a tmux FooBar project
 #
 # SETUP
 #
@@ -30,7 +30,7 @@
 # with the `--binstubs` option active. If so, it prepends the
 # PATH/bin directory to PATH.
 
-# Provide ag completions
+# Provide a completions
 if [ "$1" = "--complete" ]; then
   ls /Users/$(whoami)/code
 fi

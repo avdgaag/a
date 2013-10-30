@@ -23,8 +23,8 @@
 # The tmux environment that is set up comes with three windows:
 #
 # * editor (one pane for tests, one with Vim started)
-# * console (one pane with git logs, one with an empty shell)
-# * services (for running `rails s` or `foreman start`)
+# * servers (for zeus, Rails server, etc.)
+# * shell (for other stuff)
 #
 # It also checks to see if you are in a project using Bundler,
 # with the `--binstubs` option active. If so, it prepends the
@@ -72,34 +72,31 @@ if [ $? != 0 ]; then
     add_binstubs_to_load_path $PROJECT $PROJECT_DIR
     tmux send-keys -t $PROJECT "clear" C-m
 
-    # Set up split window at 10%, change into project directory
-    tmux split-window -h -p 80 -t $PROJECT
-    tmux send-keys -t $PROJECT:1.2 "cd $PROJECT_DIR" C-m
-    add_binstubs_to_load_path $PROJECT:1.2 $PROJECT_DIR
-    tmux send-keys -t $PROJECT:1.2 "clear" C-m
+    # Launch Vim 
+    tmux send-keys -t $PROJECT 'vim' C-m
 
-    # Launch Vim in second window
-    tmux send-keys -t $PROJECT:1.2 'vim' C-m
-
-    # Set up new window called "console" and change into
+    # Set up new window called "servers" and change into
     # project directory
-    tmux new-window -n console -t $PROJECT
+    tmux new-window -n servers -t $PROJECT
 
-    # Start live git log graph in first pane
+    # Start zeus server in first pane
     tmux send-keys -t $PROJECT:2 "cd $PROJECT_DIR" C-m
     add_binstubs_to_load_path $PROJECT:2 $PROJECT_DIR
-    tmux send-keys -t $PROJECT:2 "clear && glog" C-m
+    tmux send-keys -t $PROJECT:2 "clear && zeus start" C-m
 
     # Create second pane in second window with normal shell
     tmux split-window -h -p 50 -t $PROJECT
     tmux send-keys -t $PROJECT:2.2 "cd $PROJECT_DIR" C-m
     add_binstubs_to_load_path $PROJECT:2.2 $PROJECT_DIR
-    tmux send-keys -t $PROJECT:2.2 "clear" C-m
+    tmux send-keys -t $PROJECT:2.2 "clear && rails server" C-m
 
-    # Create new window for foreman or development server
-    tmux new-window -n services -t $PROJECT
+    # Set up new window called "servers" and change into
+    # project directory
+    tmux new-window -n shell -t $PROJECT
+    tmux send-keys -t $PROJECT:3 "cd $PROJECT_DIR" C-m
     add_binstubs_to_load_path $PROJECT:3 $PROJECT_DIR
-    tmux send-keys -t $PROJECT:3 "clear" C-m
+    tmux send-keys -t $PROJECT:3 "clear && git status" C-m
+
 
     # Always start in first window
     tmux select-window -t $PROJECT:1

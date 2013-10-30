@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+# Usage: a pngfromsvg [filename, ...]
+# Summary: Extract embedded PNG images from an SVG file
+# Help: SVG images may contain PNG files you want to use. Extract all embedded
+# files from the given SVG files and store them in the current directory as
+# "extracted-image-N.png" where N is an incremented number.
+require 'nokogiri'
+require 'base64'
+
+IMAGE_HEADER = 'data:image/png;base64,'
+
+document = Nokogiri::XML(ARGF.read)
+document.remove_namespaces!
+document.xpath("//image/@href").each_with_index do |image_attribute, index|
+  image_data = image_attribute.value.slice(IMAGE_HEADER.length..-1)
+  File.write("extracted-image-#{index}.png", Base64.decode64(image_data))
+end
+

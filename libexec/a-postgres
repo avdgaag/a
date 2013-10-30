@@ -5,12 +5,13 @@
 #
 # Available operations:
 #
-# psql:    open a prompt to the database
+# psql:    open a prompt to the current database
 # start:   start the database server
 # stop:    stop the database server
 # dump:    export database into a dump file
 # restore: import into a database from a dump file.
 # kill:    kill all connections to a database
+# heroku:  download a Heroku postgrest dump into current database
 #
 # You should provide the database name for these operations
 # using the -d option. The dump and restore subcommands

@@ -82,20 +82,20 @@ if [ $? != 0 ]; then
     # Start zeus server in first pane
     tmux send-keys -t $PROJECT:2 "cd $PROJECT_DIR" C-m
     add_binstubs_to_load_path $PROJECT:2 $PROJECT_DIR
-    tmux send-keys -t $PROJECT:2 "clear && zeus start" C-m
+    tmux send-keys -t $PROJECT:2 "clear" C-m
 
     # Create second pane in second window with normal shell
     tmux split-window -h -p 50 -t $PROJECT
     tmux send-keys -t $PROJECT:2.2 "cd $PROJECT_DIR" C-m
     add_binstubs_to_load_path $PROJECT:2.2 $PROJECT_DIR
-    tmux send-keys -t $PROJECT:2.2 "clear && rails server" C-m
+    tmux send-keys -t $PROJECT:2.2 "clear" C-m
 
     # Set up new window called "servers" and change into
     # project directory
     tmux new-window -n shell -t $PROJECT
     tmux send-keys -t $PROJECT:3 "cd $PROJECT_DIR" C-m
     add_binstubs_to_load_path $PROJECT:3 $PROJECT_DIR
-    tmux send-keys -t $PROJECT:3 "clear && git status" C-m
+    tmux send-keys -t $PROJECT:3 "clear" C-m
 
 
     # Always start in first window

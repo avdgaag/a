@@ -46,8 +46,11 @@ if [ $# -gt 0 ]; then
 fi
 
 # Parse options
-while getopts t:f:d: OPT; do
+while getopts t:f:d:c: OPT; do
   case "$OPT" in
+    c)
+      PSQL_ARGS=$@
+      ;;
     t)
       TABLE_NAME=$OPTARG
       ;;
@@ -74,7 +77,7 @@ fi
 
 case "$subcommand" in
   "" | "psql")
-    psql -d "$DATABASE_NAME"
+    psql -d "$DATABASE_NAME" $PSQL_ARGS
     ;;
   "dump")
     pg_dump -Fc --no-acl --no-owner "$DATABASE_NAME"
